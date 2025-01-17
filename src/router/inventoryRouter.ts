@@ -1,11 +1,11 @@
 import express from "express";
 import { addItemToInventory, removeItemFromInventory } from "../controllers/inventoryController";
-import { userMiddleware } from "../middleware/middleware";
+import { iotMiddleware } from "../middleware/middleware";
 const inventoryRouter = express.Router();
 
 
-inventoryRouter.put('/inventory',userMiddleware, addItemToInventory);
-inventoryRouter.delete('/inventory',userMiddleware, removeItemFromInventory);
+inventoryRouter.put('/',iotMiddleware, addItemToInventory);
+inventoryRouter.delete('/',iotMiddleware, removeItemFromInventory);
 
 
 export default inventoryRouter

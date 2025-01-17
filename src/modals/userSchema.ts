@@ -1,4 +1,5 @@
 import mongoose,{Schema} from "mongoose";
+import { IotDocument } from "./iotSchema";
 
 // Define the Item Schema for user items
 
@@ -25,7 +26,8 @@ const UserItemSchema = new Schema<userItem>({
 export interface UserDocument {
   username : string,
   password : string,
-  items : userItem[]
+  items : userItem[],
+  iot : IotDocument[]
 }
 const UserSchema = new Schema<UserDocument>({
   username: {
@@ -38,6 +40,11 @@ const UserSchema = new Schema<UserDocument>({
     required: true,
   },
   items: [UserItemSchema], // Use the UserItemSchema for user items
+  iot : [{
+    type: Schema.Types.ObjectId,
+    ref: 'Iot',
+    require : true
+  }]
 });
 
 export const User = mongoose.model('User', UserSchema);

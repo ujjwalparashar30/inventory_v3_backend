@@ -1,14 +1,18 @@
-import express,{ Request, RequestHandler, Response } from "express";
-import { User, UserDocument, userItem } from "../modals/userSchema";
+import { Request, Response } from "express";
+import { userItem } from "../modals/userSchema";
 import { Item } from "../modals/itemSchema";
 import fetchItemFromExternalApi from "../api/fetchItemUsingApi";
 import {Schema } from "mongoose";
+import { Iot } from "../modals/iotSchema";
 
 export const addItemToInventory = async (req: Request, res: Response) :Promise<any>=> {
     const { code, count = 1 } = req.body;  // Default count to 1 if not provided
-    //@ts-ignore
-    const user_id = req.userId
-    const user:any = await User.findById(user_id);
+    const uniqueIotId = req.uniqueIotId
+    const iot = await Iot.find({uniqeId : uniqueIotId}).populate("owner", "-password");
+    if(!iot){
+        return res.status(404).json({ message: "Iot not found" });
+    }
+    const user:any = iot[0].owner
 
     const query = {
         $or: [
@@ -20,7 +24,6 @@ export const addItemToInventory = async (req: Request, res: Response) :Promise<a
     let newItem:userItem|null = await Item.findOne(query);
 
     if (newItem) {
-        console.log('Item found in database');
         //@ts-ignore
         await addOrUpdateUserItem(user, newItem._id, count);
 
@@ -51,7 +54,6 @@ export const addItemToInventory = async (req: Request, res: Response) :Promise<a
 
             await newItem.save();
             console.log('Stored in the database');
-            console.log(user)
 
             await addOrUpdateUserItem(user, newItem._id, count);
 
@@ -81,8 +83,12 @@ export const addItemToInventory = async (req: Request, res: Response) :Promise<a
 
 export const removeItemFromInventory = async (req: Request, res: Response) :Promise<any> => {
     const { code, count = 1 } = req.body;
-    //@ts-ignore
-    const user:any = await User.findById(req.userId);
+    const uniqueIotId = req.uniqueIotId
+    const iot = await Iot.find({uniqeId : uniqueIotId}).populate("owner", "-password");
+    if(!iot){
+        return res.status(404).json({ message: "Iot not found" });
+    }
+    const user:any = iot[0].owner
 
     if (!user) {
         return res.status(400).json({
@@ -155,6 +161,7 @@ export const removeItemFromInventory = async (req: Request, res: Response) :Prom
 // Helper function to remove or decrement item in user's items array
 async function removeUserItem(user:any, itemId: Schema.Types.ObjectId, count:number) {
     const existingItem = user.items.find((item:userItem) => item.itemId.toString() === itemId.toString());
+
 
     if (existingItem) {
         // If the item's count is greater than the decrement count
