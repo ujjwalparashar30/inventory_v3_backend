@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { userItem } from "../modals/userSchema";
+import { UserDocument, userItem } from "../modals/userSchema";
 import { Item } from "../modals/itemSchema";
 import fetchItemFromExternalApi from "../api/fetchItemUsingApi";
 import {Schema } from "mongoose";
 import { Iot } from "../modals/iotSchema";
+import scrapeUPCData from "../api/fetchItemUsingScrapping";
 
 export const addItemToInventory = async (req: Request, res: Response) :Promise<any>=> {
     const { code, count = 1 } = req.body;  // Default count to 1 if not provided
@@ -64,6 +65,8 @@ export const addItemToInventory = async (req: Request, res: Response) :Promise<a
                 code
             });
         } else {
+            const body = await scrapeUPCData(code);
+            
             return res.status(404).json({
                 success: false,
                 message: 'Item not found in external API',
@@ -123,7 +126,7 @@ export const removeItemFromInventory = async (req: Request, res: Response) :Prom
     }
 
     try {
-        const result = await removeUserItem(user, itemToRemove._id, count);
+        const result = await removeUserItem(user, itemToRemove._id,itemToRemove.title, count);
 
         if (result.removed) {
             return res.status(200).json({
@@ -159,7 +162,7 @@ export const removeItemFromInventory = async (req: Request, res: Response) :Prom
 
 
 // Helper function to remove or decrement item in user's items array
-async function removeUserItem(user:any, itemId: Schema.Types.ObjectId, count:number) {
+async function removeUserItem(user:UserDocument, itemId: Schema.Types.ObjectId,title:string, count:number) {
     const existingItem = user.items.find((item:userItem) => item.itemId.toString() === itemId.toString());
 
 
@@ -167,6 +170,7 @@ async function removeUserItem(user:any, itemId: Schema.Types.ObjectId, count:num
         // If the item's count is greater than the decrement count
         if (existingItem.count > count) {
             existingItem.count -= count;  // Decrement the count
+            if(!existingItem.count)user.shoppingList.push(title);
             await user.save();
             return { decremented: true };
         } 
