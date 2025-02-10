@@ -23,14 +23,27 @@ export interface Item {
 
 export async function scrapeUPCData(upcCode: string): Promise<Partial<Item> | null> {
   const url = `https://go-upc.com/search?q=${upcCode}`;
-  
+
   // Set timeout (10 seconds)
-  const TIMEOUT = 10000;  
-  const browser = await puppeteer.launch({ headless: true }).catch((err) => {
+  const TIMEOUT = 10000;
+
+  // Puppeteer launch configuration
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath: process.env.CHROME_EXECUTABLE_PATH || puppeteer.executablePath(), // Use Render's Chromium binary or fallback to local
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage", // Helps avoid memory issues in cloud environments
+      "--disable-accelerated-2d-canvas",
+      "--disable-gpu",
+      "--single-process", // May be necessary for resource-constrained environments
+    ],
+  }).catch((err) => {
     console.error("Failed to launch browser:", err);
     return null;
   });
-  
+
   if (!browser) return null;
   const page = await browser.newPage();
 
