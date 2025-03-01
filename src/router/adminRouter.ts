@@ -25,6 +25,6 @@ adminRouter.post('/login', loginUser);
 adminRouter.post("/logout",logoutUser);
 
 //generate new iot id
-adminRouter.post("/generateIotId", isAdmin, generateIotId);
+adminRouter.post("/generateIotId", generateIotId);
 
 export default adminRouter;

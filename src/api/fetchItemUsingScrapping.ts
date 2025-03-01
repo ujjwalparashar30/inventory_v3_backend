@@ -29,7 +29,7 @@ export async function scrapeUPCData(upcCode: string): Promise<Partial<Item> | nu
 
   // Puppeteer launch configuration
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     executablePath: process.env.CHROME_EXECUTABLE_PATH || puppeteer.executablePath(), // Use Render's Chromium binary or fallback to local
     args: [
       "--no-sandbox",
