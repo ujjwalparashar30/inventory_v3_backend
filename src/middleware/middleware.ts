@@ -33,7 +33,7 @@ export const userMiddleware = (req : Request, res : Response , next : NextFuncti
 export const iotMiddleware = (req:Request , res: Response , next : NextFunction)=>{
     try{
         const {uniqueIotId} = req.body
-        const iot = Iot.findOne({uniqueIotId})
+        const iot = Iot.findOne({uniqeId : uniqueIotId})
         if(!iot){
             res.status(404).json({message : "Iot not found" })
             }
