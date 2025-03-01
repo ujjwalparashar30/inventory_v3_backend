@@ -30,10 +30,10 @@ export const userMiddleware = (req : Request, res : Response , next : NextFuncti
     }
 }
 
-export const iotMiddleware = (req:Request , res: Response , next : NextFunction)=>{
+export const iotMiddleware =async (req:Request , res: Response , next : NextFunction)=>{
     try{
         const {uniqueIotId} = req.body
-        const iot = Iot.findOne({uniqeId : uniqueIotId})
+        const iot = await Iot.findOne({uniqeId : uniqueIotId})
         if(!iot){
             res.status(404).json({message : "Iot not found" })
             }
