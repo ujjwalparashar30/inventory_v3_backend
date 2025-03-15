@@ -29,8 +29,10 @@ export async function scrapeUPCData(upcCode: string): Promise<Partial<Item> | nu
 
   // Puppeteer launch configuration
   const browser = await puppeteer.launch({
-    headless: false,
-    executablePath: process.env.CHROME_EXECUTABLE_PATH || puppeteer.executablePath(), // Use Render's Chromium binary or fallback to local
+    headless: true,
+    executablePath: process.env.NODE_ENV === "production"
+    ? process.env.PUPPETEER_EXECUTABLE_PATH
+    : puppeteer.executablePath(),
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -39,6 +41,7 @@ export async function scrapeUPCData(upcCode: string): Promise<Partial<Item> | nu
       "--disable-gpu",
       "--single-process", // May be necessary for resource-constrained environments
     ],
+    
   }).catch((err) => {
     console.error("Failed to launch browser:", err);
     return null;

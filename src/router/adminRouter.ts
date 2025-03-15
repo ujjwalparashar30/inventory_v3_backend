@@ -8,7 +8,7 @@ const adminRouter = express.Router();
 adminRouter.get("/",isAdmin , getAdmin)
 
 //create admin
-adminRouter.post("/",
+adminRouter.post("/register",
     isAdmin,
      createAdmin)
 
@@ -25,6 +25,8 @@ adminRouter.post('/login', loginUser);
 adminRouter.post("/logout",logoutUser);
 
 //generate new iot id
-adminRouter.post("/generateIotId", generateIotId);
+adminRouter.post("/generateIotId",
+     isAdmin,
+    generateIotId);
 
 export default adminRouter;
