@@ -110,6 +110,11 @@ export const logoutUser = async (req: Request, res: Response) => {
 export const getProfile = async (req: Request, res: Response) => {
   //@ts-ignore
   const user = await User.findById(req.userId)
+  .populate({
+    path: 'items.itemId',
+    model: 'Item' // The name of the model for the referenced items
+  })
+  .exec();;
   res.status(200).json(user);
 }
 
