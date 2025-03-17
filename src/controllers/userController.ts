@@ -114,7 +114,7 @@ export const getProfile = async (req: Request, res: Response) => {
     path: 'items.itemId',
     model: 'Item' // The name of the model for the referenced items
   })
-  .exec();;
+  .exec();
   res.status(200).json(user);
 }
 

@@ -11,6 +11,7 @@ export const addItemToInventory = async (req: Request, res: Response): Promise<a
     const { code, count = 1 } = req.body;  // Default count to 1 if not provided
     const uniqueIotId = req.uniqueIotId
     const iot = await Iot.find({ uniqeId: uniqueIotId }).populate("owner", "-password");
+    console.log(iot);
     if (!iot) {
         return res.status(404).json({ message: "Iot not found" });
     }
