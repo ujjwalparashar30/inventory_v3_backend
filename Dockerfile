@@ -12,14 +12,7 @@ RUN npm ci
 
 COPY . .
 
-# Create dist directory and set ownership
-RUN mkdir -p dist && \
-    chown -R node:node /app/node_modules /app/dist
+# Run TypeScript compilation
+RUN npx tsc
 
-# Switch to node user for building
-USER node
-RUN npm run build
-
-# Switch back to root for running (if needed for your app)
-USER root
 CMD ["node", "dist/index.js"]
