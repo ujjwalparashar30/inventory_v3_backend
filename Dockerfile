@@ -5,15 +5,21 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY ./package.json ./package.json
+COPY ./package-lock.json ./package-lock.json
 
 RUN npm ci
 
 COPY . .
 
-# Fix permissions before build
-RUN chmod -R 777 /app
+# Create dist directory and set ownership
+RUN mkdir -p dist && \
+    chown -R node:node /app/node_modules /app/dist
 
+# Switch to node user for building
+USER node
 RUN npm run build
 
+# Switch back to root for running (if needed for your app)
+USER root
 CMD ["node", "dist/index.js"]
