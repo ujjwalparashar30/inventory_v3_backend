@@ -29,7 +29,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.1",
     "ngrok": "^5.0.0-beta.2",
-    "puppeteer": "^24.2.0",
+    "puppeteer": "19.7.2",
     "request-promise-native": "^1.0.9",
     "uuid": "^11.0.4",
     "zod": "^3.24.1"
