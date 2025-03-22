@@ -5,13 +5,15 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 WORKDIR /app
 
-COPY ./package.json ./package.json
-COPY ./package-lock.json ./package-lock.json
+COPY package.json package-lock.json ./
 
 RUN npm ci
 
 COPY . .
 
-RUN npm run build
-CMD ["node", "dist/index.js"]
+# Fix permissions before build
+RUN chmod -R 777 /app
 
+RUN npm run build
+
+CMD ["node", "dist/index.js"]
